@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
+	"example.com/rest-api/db"
 	"example.com/rest-api/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	// Initialize the database
+	db.InitDB()
+
+	// Create a new server
 	server := gin.Default()
 
 	// Define a GET request route
