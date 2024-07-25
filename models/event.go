@@ -6,7 +6,7 @@ import (
 
 // Event is a struct that represents an event
 type Event struct {
-    ID          string    `json:"id"`
+    ID          int64     `json:"id"`
     Name      	string    `json:"name" binding:"required"`
     Description string    `json:"description" binding:"required"`
     Location    string    `json:"location" binding:"required"`
@@ -87,7 +87,9 @@ func GetEventById (id string) (Event, error) {
     err := db.DB.QueryRow(query, id).Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
 
     if err != nil {
-        return Event{}, err
+        return Event{
+            ID: -1,
+        }, err
     }
 
     return event, nil

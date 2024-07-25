@@ -71,7 +71,7 @@ func addEvent(c *gin.Context) {
 	// Set the ID and UserID of the event
 	events, _ := models.GetAllEvents()
 
-	event.ID = fmt.Sprintf("%d", len(events)+1)
+	event.ID = int64(len(events)+1)
 	event.UserID = "1"
 
 	// Save the event
@@ -97,17 +97,19 @@ func getEvent(c *gin.Context) {
 	// Get the event from the database
 	event, err := models.GetEventById(id)
 
+	// If Event is empty, return a 404
+	if event.ID == -1 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
 	if err != nil {
 		// Return an error if the event cannot be retrieved
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// If Event is empty, return a 404
-	if event.ID == "" {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
-		return
-	}
+
 
 	// Return the event as JSON
 	c.JSON(http.StatusOK, event)
