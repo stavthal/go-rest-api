@@ -26,7 +26,15 @@ func (e Event) Save() {
     VALUES (?, ?, ?, ?, ?)
     `
 
-    _, err := db.DB.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+    // Prepare the query
+    stmt, prepareError := db.DB.Prepare(query)
+
+    if prepareError != nil {
+        panic(prepareError)
+    }
+
+    // Execute the query
+    _, err := stmt.Exec(&stmt, e.Name, e.Description, e.Location, e.DateTime, e.UserID)
 
     if err != nil {
         panic(err)
