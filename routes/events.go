@@ -92,3 +92,101 @@ func getEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 
 }
+
+func updateEvent(c *gin.Context) {
+	// Get the ID from the URL
+	id := c.Param("id")
+
+	// Convert the ID to an integer
+	convertedId, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		// Return an error if the ID cannot be converted
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	event, err := models.GetEventById(convertedId)
+
+	if event.ID == -1 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	if err != nil {
+		// Return an error if the event cannot be retrieved
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Create a new event
+	var updatedEvent models.Event
+
+	// Re-set the ID and UserID of the event
+	updatedEvent.ID = event.ID
+	updatedEvent.UserID = event.UserID
+
+	// Bind the request body to the event
+	if err := c.ShouldBindJSON(&updatedEvent); err != nil {
+		// Return an error if the event cannot be bound
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Update the event
+	err = updatedEvent.Update(convertedId)
+
+	if err != nil {
+		// Return an error if the event cannot be updated
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return the updated event
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your event was succesfully updated!" ,
+		"event": updatedEvent,
+	})
+}
+
+
+func deleteEvent(c *gin.Context) {
+	// Get the ID from the URL
+	id := c.Param("id")
+
+	// Convert the ID to an integer
+	convertedId, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		// Return an error if the ID cannot be converted
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	event, err := models.GetEventById(convertedId)
+
+	if event.ID == -1 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	if err != nil {
+		// Return an error if the event cannot be retrieved
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Delete the event
+	err = event.Delete()
+
+	if err != nil {
+		// Return an error if the event cannot be deleted
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return a success message
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Your event was succesfully deleted!",
+	})
+}

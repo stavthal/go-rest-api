@@ -1,0 +1,11 @@
+{
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "GO REST API DB",
+      "database": "${workspaceFolder:go-rest-api}/api.db"
+    }
+  ]
+}
