@@ -98,6 +98,12 @@ func getEvent(c *gin.Context) {
 	// Convert the ID to an integer
 	convertedId, err := strconv.ParseInt(id, 10, 64)
 
+	if err != nil {
+		// Return an error if the ID cannot be converted
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
 	// Get the event from the database
 	event, err := models.GetEventById(convertedId)
 
