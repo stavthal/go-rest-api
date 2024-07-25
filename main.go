@@ -35,7 +35,13 @@ func main() {
 // Function that returns events
 func getEvents(c *gin.Context) {
 	// Create a slice of events
-	events := models.GetAllEvents()
+	events, err := models.GetAllEvents()
+
+	if err != nil {
+		// Return an error if the events cannot be retrieved
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Return the events as JSON
 	c.JSON(http.StatusOK, events)
@@ -54,11 +60,20 @@ func addEvent(c *gin.Context) {
 		return
 	}
 
-	event.ID = fmt.Sprintf("%d", len(models.GetAllEvents())+1)
+	// Set the ID and UserID of the event
+	events, _ := models.GetAllEvents()
+
+	event.ID = fmt.Sprintf("%d", len(events)+1)
 	event.UserID = "1"
 
 	// Save the event
-	event.Save()
+	err := event.Save()
+
+	if err != nil {
+		// Return an error if the event cannot be saved
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Return the event
 	c.JSON(http.StatusCreated, gin.H{ 
