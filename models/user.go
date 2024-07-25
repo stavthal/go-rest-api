@@ -51,13 +51,13 @@ func (u User) Save() error {
 }
 
 func (u User) Authenticate() error {
-	query := "SELECT password FROM users WHERE email = ?"
+	query := "SELECT id,password FROM users WHERE email = ?"
 	row := db.DB.QueryRow(query, u.Email)
 
 	var retrievedPassword string
 
-
-	err := row.Scan(&retrievedPassword)
+	// Get the user ID and password from the row that was found from the query
+	err := row.Scan(&u.ID, &retrievedPassword)
 
 	if err != nil {
 		return err
