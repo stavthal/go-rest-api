@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"example.com/rest-api/db"
 	"example.com/rest-api/models"
@@ -94,8 +95,11 @@ func getEvent(c *gin.Context) {
 	// Get the ID from the URL
 	id := c.Param("id")
 
+	// Convert the ID to an integer
+	convertedId, err := strconv.ParseInt(id, 10, 64)
+
 	// Get the event from the database
-	event, err := models.GetEventById(id)
+	event, err := models.GetEventById(convertedId)
 
 	// If Event is empty, return a 404
 	if event.ID == -1 {

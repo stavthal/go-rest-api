@@ -76,7 +76,7 @@ func GetAllEvents() ([]Event, error) {
     return events, nil
 }
 
-func GetEventById (id string) (Event, error) {
+func GetEventById (id int64) (Event, error) {
     // Query the database for an event by id
     query := `
     SELECT * FROM events WHERE id = ?
