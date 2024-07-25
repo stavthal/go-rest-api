@@ -35,7 +35,7 @@ func (e Event) Save() error {
     _, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
 
 
-    defer stmt.Close() // Make sure to close the statement when the function returns
+    defer stmt.Close() // Closing the stmt here makes the use of stmt pointless. It should not be closed to take advantage of the prepared statement
 
     if err != nil {
         return err
@@ -74,4 +74,21 @@ func GetAllEvents() ([]Event, error) {
     }
 
     return events, nil
+}
+
+func GetEventById (id string) (Event, error) {
+    // Query the database for an event by id
+    query := `
+    SELECT * FROM events WHERE id = ?
+    `
+
+    var event Event
+
+    err := db.DB.QueryRow(query, id).Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+
+    if err != nil {
+        return Event{}, err
+    }
+
+    return event, nil
 }

@@ -21,8 +21,16 @@ func main() {
 	// Define a GET request route
 	server.GET("/events", getEvents)
 
+	// GET request route to get a single event
+	server.GET("/events/:id", getEvent)
+
 	// Define a POST request route to add an event
 	server.POST("/events", addEvent)
+
+
+
+
+
 	// Run the server on port 8080
 	server.Run(":8080")
 
@@ -80,4 +88,28 @@ func addEvent(c *gin.Context) {
 		"message": "Your event was succesfully created!" , 
 		"event": event,
 	})
+}
+
+func getEvent(c *gin.Context) {
+	// Get the ID from the URL
+	id := c.Param("id")
+
+	// Get the event from the database
+	event, err := models.GetEventById(id)
+
+	if err != nil {
+		// Return an error if the event cannot be retrieved
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// If Event is empty, return a 404
+	if event.ID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	// Return the event as JSON
+	c.JSON(http.StatusOK, event)
+
 }
