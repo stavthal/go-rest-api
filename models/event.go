@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"fmt"
+
+	"example.com/rest-api/db"
+)
 
 // Event is a struct that represents an event
 type Event struct {
@@ -8,20 +12,57 @@ type Event struct {
     Name      	string    `json:"name" binding:"required"`
     Description string    `json:"description" binding:"required"`
     Location    string    `json:"location" binding:"required"`
-    DateTime    time.Time `json:"dateTime" binding:"required"`
+    DateTime    string     `json:"dateTime" binding:"required"`
     UserID      string    `json:"userID"`
 }
 
-var events = []Event{}
 
 
 
 func (e Event) Save() {
 	// Save the event to the database
-	events = append(events, e)
+    query := `
+    INSERT INTO events (name, description, location, dateTime, userID)
+    VALUES (?, ?, ?, ?, ?)
+    `
+
+    _, err := db.DB.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+
+    if err != nil {
+        panic(err)
+    }
 
 }
 
 func GetAllEvents() []Event {
-	return events
+    // Query the database for all events
+    query := `
+    SELECT * FROM events
+    `
+
+    rows, err := db.DB.Query(query)
+
+    if err != nil {
+        panic(err)
+    }
+
+    defer rows.Close() // Make sure to close the rows when the function returns
+
+    var events []Event
+
+    for rows.Next() {
+        var event Event
+
+        err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+
+        if err != nil {
+            panic(err)
+        }
+
+        fmt.Println(event)
+
+        events = append(events, event)
+    }
+
+    return events
 }
