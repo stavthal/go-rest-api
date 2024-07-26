@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"example.com/rest-api/models"
-	"example.com/rest-api/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,28 +23,8 @@ func getEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
-
 // Function that adds an event
 func addEvent(c *gin.Context) {
-	// Get the token from the headers
-	token := c.Request.Header.Get("Authorization")
-
-	if token == "" {
-		// Return an error if the token is missing
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	// Verify the token
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		// Return an error if the token is invalid
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token invalid or has expired."})
-		return
-	}
-
-
 
 	// Create a new event
 	var event models.Event
@@ -60,7 +39,10 @@ func addEvent(c *gin.Context) {
 	// Set the ID and UserID of the event
 	events, _ := models.GetAllEvents()
 
-	event.ID = int64(len(events)+1)
+	event.ID = int64(len(events) + 1)
+
+	// Get the user ID
+	userId := context.GetInt64("userId")
 
 	// Convert userId to string and set it as the UserID of the event
 	event.UserID = userId
@@ -75,9 +57,9 @@ func addEvent(c *gin.Context) {
 	}
 
 	// Return the event
-	c.JSON(http.StatusCreated, gin.H{ 
-		"message": "Your event was succesfully created!" , 
-		"event": event,
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Your event was succesfully created!",
+		"event":   event,
 	})
 }
 
@@ -108,8 +90,6 @@ func getEvent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-
 
 	// Return the event as JSON
 	c.JSON(http.StatusOK, event)
@@ -167,11 +147,10 @@ func updateEvent(c *gin.Context) {
 
 	// Return the updated event
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Your event was succesfully updated!" ,
-		"event": updatedEvent,
+		"message": "Your event was succesfully updated!",
+		"event":   updatedEvent,
 	})
 }
-
 
 func deleteEvent(c *gin.Context) {
 	// Get the ID from the URL
