@@ -9,7 +9,7 @@ import (
 
 // User struct
 type User struct {
-	ID       int    `json:"id"`
+	ID       int64    `json:"id"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -50,7 +50,7 @@ func (u User) Save() error {
 	return nil
 }
 
-func (u User) Authenticate() error {
+func (u *User) Authenticate() error {
 	query := "SELECT id,password FROM users WHERE email = ?"
 	row := db.DB.QueryRow(query, u.Email)
 

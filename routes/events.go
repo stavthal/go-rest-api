@@ -37,11 +37,11 @@ func addEvent(c *gin.Context) {
 	}
 
 	// Verify the token
-	err := utils.VerifyToken(token)
+	userId, err := utils.VerifyToken(token)
 
 	if err != nil {
 		// Return an error if the token is invalid
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token invalid or has expired."})
 		return
 	}
 
@@ -61,7 +61,9 @@ func addEvent(c *gin.Context) {
 	events, _ := models.GetAllEvents()
 
 	event.ID = int64(len(events)+1)
-	event.UserID = "1"
+
+	// Convert userId to string and set it as the UserID of the event
+	event.UserID = userId
 
 	// Save the event
 	err = event.Save()

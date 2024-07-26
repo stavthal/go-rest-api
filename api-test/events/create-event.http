@@ -1,10 +1,10 @@
 POST http://localhost:8080/events
 content-type: application/json
-authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6MCwiZXhwIjoxNzIyMDc4NDYwLCJ1c2VySWQiOiJ0ZXN0In0.EpE649vWIT9bhVOfanpwn3wYh9klhmlwTZ99M8sDXj4
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3MjIwODM4MjMsInVzZXJJZCI6MX0.FSVC9NhrWwf83zDmQ_5BxeqNhDcze3FoQRqf7AkD4iE
 
 {
-  "name": "Test Event 5",
-  "description": "This is a test event 5",
+  "name": "Test Event 2",
+  "description": "This is a test event 2",
   "location": "Test Location",
   "dateTime": "2021-12-31T23:59:59Z"
 }

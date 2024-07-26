@@ -13,8 +13,8 @@ func GenerateToken(email string, userId int64) (string, error) {
 	secret := os.Getenv("JWT_SECRET")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId" : email,
-		"email": userId,
+		"userId" : userId,
+		"email": email,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
@@ -27,7 +27,7 @@ func GenerateToken(email string, userId int64) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) (error) {
+func VerifyToken(tokenString string) (int64 , error) {
 	// Read the secret from the .env file
 	secret := os.Getenv("JWT_SECRET")
 
@@ -44,27 +44,30 @@ func VerifyToken(tokenString string) (error) {
 	})
 
 	if err != nil {
-		return errors.New("could not parse token")
+		return 0, errors.New("could not parse token")
 	}
 
 	// Check if parsed token is valid
 	if !parsedToken.Valid {
-		return errors.New("token is not valid")
+		return 0, errors.New("token is not valid")
 	}
 
 	// Check if the parsed token is a map claims
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 
 	if !ok {
-		return errors.New("could not parse claims")
+		return 0, errors.New("could not parse claims")
 	}
 
 	// Check if the token has expired
 	exp := claims["exp"].(float64)
 
 	if time.Now().Unix() > int64(exp) {
-		return errors.New("token has expired")
+		return 0,errors.New("token has expired")
 	}
 
-	return nil
+	// Get the userId from the token
+	userId := int64(claims["userId"].(float64))
+
+	return userId, nil
 }
