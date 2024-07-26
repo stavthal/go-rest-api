@@ -42,13 +42,13 @@ func addEvent(c *gin.Context) {
 	event.ID = int64(len(events) + 1)
 
 	// Get the user ID
-	userId := context.GetInt64("userId")
+	userId := c.GetInt64("userId")
 
 	// Convert userId to string and set it as the UserID of the event
 	event.UserID = userId
 
 	// Save the event
-	err = event.Save()
+	err := event.Save()
 
 	if err != nil {
 		// Return an error if the event cannot be saved
