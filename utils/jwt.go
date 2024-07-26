@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"time"
 
@@ -24,4 +25,46 @@ func GenerateToken(email string, userId int64) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func VerifyToken(tokenString string) (error) {
+	// Read the secret from the .env file
+	secret := os.Getenv("JWT_SECRET")
+
+	// Parse the token
+	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+
+		if !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		// Return the secret used to sign the token
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		return errors.New("could not parse token")
+	}
+
+	// Check if parsed token is valid
+	if !parsedToken.Valid {
+		return errors.New("token is not valid")
+	}
+
+	// Check if the parsed token is a map claims
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+
+	if !ok {
+		return errors.New("could not parse claims")
+	}
+
+	// Check if the token has expired
+	exp := claims["exp"].(float64)
+
+	if time.Now().Unix() > int64(exp) {
+		return errors.New("token has expired")
+	}
+
+	return nil
 }
