@@ -11,20 +11,23 @@ func RegisterRoutes(server *gin.Engine) {
 		Events
 	*/
 
+
+	// Make a group of routes that require authentication
+	authenticated := server.Group("/")
+	authenticated.Use(middlewares.Authenticate)
+
+	authenticated.POST("/events", addEvent)
+	authenticated.PUT("/events/:id", updateEvent)
+	authenticated.DELETE("/events/:id", deleteEvent)
+
+
+
+
 	// Define a GET request route
 	server.GET("/events", getEvents)
 
 	// GET request route to get a single event
 	server.GET("/events/:id", getEvent)
-
-	// Define a POST request route to add an event
-	server.POST("/events", middlewares.Authenticate, addEvent)
-
-	// PUT request route to update an event
-	server.PUT("/events/:id", updateEvent)
-
-	// DELETE request route to delete an event
-	server.DELETE("/events/:id", deleteEvent)
 
 	/*
 		Users
