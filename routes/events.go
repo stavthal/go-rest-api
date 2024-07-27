@@ -175,9 +175,16 @@ func deleteEvent(c *gin.Context) {
 	}
 
 	event, err := models.GetEventById(convertedId)
+	userId := c.GetInt64("userId")
 
 	if event.ID == -1 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	// If the event's UserID does not match the userId from the context, return a 403
+	if event.UserID != userId {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this event"})
 		return
 	}
 
