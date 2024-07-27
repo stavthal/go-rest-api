@@ -62,4 +62,21 @@ func createTables() {
 		panic("Count not create the events table")
 	}
 
+	registrationTableQuery := `
+	CREATE TABLE IF NOT EXISTS registrations (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		eventID INTEGER,
+		userID INTEGER,
+		FOREIGN KEY(eventID) REFERENCES events(id),
+		FOREIGN KEY(userID) REFERENCES users(id)
+	)`
+
+	// Execute the query for registrations
+	_, registrationErr := DB.Exec(registrationTableQuery)
+
+	// Error handling
+	if registrationErr != nil {
+		panic("Count not create the registrations table")
+	}
+
 }

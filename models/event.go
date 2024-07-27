@@ -148,3 +148,51 @@ func GetEventById (id int64) (Event, error) {
     return event, nil
 }
 
+
+func (e Event) RegisterUser(userId int64) error {
+    // Register a user for an event
+    query := `
+    INSERT INTO registrations (eventId, userId)
+    VALUES (?, ?)
+    `
+
+    stmt, prepareError := db.DB.Prepare(query)
+
+    if prepareError != nil {
+        panic(prepareError)
+    }
+
+    _, err := stmt.Exec(e.ID, userId)
+
+    defer stmt.Close()
+
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func (e Event) UnregisterUser(userId int64) error {
+    // Unregister a user from an event
+    query := `
+    DELETE FROM registrations
+    WHERE eventId = ? AND userId = ?
+    `
+
+    stmt, prepareError := db.DB.Prepare(query)
+
+    if prepareError != nil {
+        panic(prepareError)
+    }
+
+    _, err := stmt.Exec(e.ID, userId)
+
+    defer stmt.Close()
+
+    if err != nil {
+        return err
+    }
+
+    return nil
+}

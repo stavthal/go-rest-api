@@ -1,0 +1,8 @@
+POST http://localhost:8080/login
+Content-Type: application/json
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzIiwiZXhwIjoxNzIyMTYwNzYzLCJ1c2VySWQiOjN9.kxRD1isTJZNxDWBggNAXbeM3RXhzQuhg9YNK7yEZLJ8
+
+{
+    "email": "test3",
+    "password": "test3"
+}
