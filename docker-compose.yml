@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=development
+      - JWT_SECRET=docker_random_string
+    volumes:
+      - ./data:/app/data
+    command:
+      [
+        "sh",
+        "-c",
+        "go build -o main . && ./main --config config.yaml --verbose",
+      ]
